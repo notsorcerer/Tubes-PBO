@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="id"
+      th:with="content=~{::content}">
+<head th:replace="~{admin/layout/adminLayout :: head('Kategori - LiquidPedia Admin')}">
+    <title>Kategori - LiquidPedia Admin</title>
+</head>
+<body th:replace="~{admin/layout/adminLayout :: layout}">
+<th:block th:fragment="content">
+    <div class="admin-toolbar">
+        <h2 style="font-family:'Syne',sans-serif;font-weight:700;">Manajemen Kategori</h2>
+        <a href="/admin/categories/create" class="btn btn-primary">
+            <i class="ti ti-plus"></i> Tambah Kategori
+        </a>
+    </div>
+
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Nama Kategori</th>
+                    <th>Deskripsi</th>
+                    <th>Jumlah Produk</th>
+                    <th style="width:140px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="cat : ${categories}">
+                    <td><strong th:text="${cat.categoryName}">Kategori</strong></td>
+                    <td style="color:var(--text-light);max-width:300px;"
+                        th:text="${cat.deskripsi} ?: '-'">Deskripsi</td>
+                    <td>
+                        <span class="admin-badge admin-badge-primary"
+                              th:text="${cat.produks != null ? #lists.size(cat.produks) : 0}">0</span>
+                    </td>
+                    <td>
+                        <div style="display:flex;gap:6px;">
+                            <a th:href="@{/admin/categories/{id}/edit(id=${cat.idCategory})}"
+                               class="btn btn-sm btn-secondary" style="padding:6px 12px;">
+                                <i class="ti ti-edit" style="font-size:0.85rem;"></i> Edit
+                            </a>
+                            <form method="post" th:action="@{/admin/categories/{id}/delete(id=${cat.idCategory})}"
+                                  style="display:inline;" onsubmit="return confirmDelete(event, 'Yakin ingin menghapus kategori ini?')">
+                                <button type="submit" class="btn btn-sm btn-danger" style="padding:6px 12px;">
+                                    <i class="ti ti-trash" style="font-size:0.85rem;"></i> Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(categories)}">
+                    <td colspan="4" style="text-align:center;padding:48px;color:var(--text-light);">
+                        <i class="ti ti-tag-off" style="font-size:2rem;display:block;margin-bottom:12px;"></i>
+                        Belum ada kategori
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function confirmDelete(event, message) {
+            if (!confirm(message)) {
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
+    </script>
+</th:block>
+</html>

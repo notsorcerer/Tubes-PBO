@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="id">
+<head th:replace="~{fragments/header :: head('Profile - LiquidPedia')}">
+    <title>Profile - LiquidPedia</title>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <section class="section">
+        <div class="container">
+            <h2 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:24px;">My Profile</h2>
+
+            <div class="profile-grid">
+                <div class="profile-section">
+                    <h3 style="font-family:'Syne',sans-serif;margin-bottom:16px;">Edit Profil</h3>
+                    <form method="post" th:action="@{/profile/update}">
+                        <div class="form-group">
+                            <label class="form-label">Nama</label>
+                            <input type="text" name="nameUser" class="form-input" th:value="${customer.nameUser}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" th:value="${customer.email}" disabled style="background:var(--gray-200);">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">No. Telepon</label>
+                            <input type="text" name="phone" class="form-input" th:value="${customer.phone}">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    </form>
+                </div>
+
+                <div class="profile-section">
+                    <h3 style="font-family:'Syne',sans-serif;margin-bottom:16px;">Ubah Password</h3>
+                    <form method="post" th:action="@{/profile/password}">
+                        <div class="form-group">
+                            <label class="form-label">Password Saat Ini</label>
+                            <input type="password" name="currentPassword" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password Baru</label>
+                            <input type="password" name="newPassword" class="form-input" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Konfirmasi Password Baru</label>
+                            <input type="password" name="confirmPassword" class="form-input" required>
+                        </div>
+                        <button type="submit" class="btn btn-secondary">Ubah Password</button>
+                    </form>
+                </div>
+
+                <div class="profile-section full">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                        <h3 style="font-family:'Syne',sans-serif;">Manajemen Alamat</h3>
+                        <button onclick="document.getElementById('addressForm').style.display='block'" class="btn btn-primary btn-sm">+ Tambah Alamat</button>
+                    </div>
+
+                    <div id="addressForm" style="display:none;background:var(--gray-100);padding:24px;border-radius:var(--radius);margin-bottom:24px;">
+                        <h4 style="margin-bottom:16px;">Alamat Baru</h4>
+                        <form method="post" th:action="@{/profile/address}" th:object="${addressDto}">
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                                <div class="form-group">
+                                    <label class="form-label">Label</label>
+                                    <input type="text" name="label" class="form-input" placeholder="Rumah / Kantor">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Nama Penerima</label>
+                                    <input type="text" name="receiverName" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">No. Telepon</label>
+                                    <input type="text" name="phoneNum" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Kota</label>
+                                    <input type="text" name="city" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Provinsi</label>
+                                    <input type="text" name="province" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Kode Pos</label>
+                                    <input type="text" name="posCode" class="form-input">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Alamat Lengkap</label>
+                                <textarea name="address" class="form-textarea"></textarea>
+                            </div>
+                            <div class="form-check" style="margin-bottom:16px;">
+                                <input type="checkbox" name="default" id="newDefault">
+                                <label for="newDefault">Jadikan alamat default</label>
+                            </div>
+                            <div style="display:flex;gap:12px;">
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                                <button type="button" onclick="document.getElementById('addressForm').style.display='none'" class="btn btn-outline" style="border-color:var(--gray-300);color:var(--text);">Batal</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="address-grid">
+                        <div th:each="addr : ${addresses}" class="address-card" th:classappend="${addr.isDefault} ? 'default' : ''">
+                            <div class="label">
+                                <span th:text="${addr.label}">Rumah</span>
+                                <span th:if="${addr.isDefault}" class="badge badge-primary" style="margin-left:8px;">Default</span>
+                            </div>
+                            <p><strong th:text="${addr.receiverName}">Nama</strong></p>
+                            <p style="font-size:0.85rem;color:var(--text-light);" th:text="${addr.phoneNum}">08123456789</p>
+                            <p style="font-size:0.85rem;color:var(--text-light);margin:4px 0;" th:text="${addr.address}">Alamat</p>
+                            <p style="font-size:0.85rem;color:var(--text-light);" th:text="${addr.city} + ', ' + ${addr.province} + ' ' + ${addr.posCode}">Kota</p>
+                            <div style="margin-top:12px;display:flex;gap:8px;">
+                                <form method="post" th:action="@{/profile/address/default/{id}(id=${addr.idAddress})}">
+                                    <button type="submit" class="btn btn-sm btn-secondary" th:unless="${addr.isDefault}">Set Default</button>
+                                </form>
+                                <form method="post" th:action="@{/profile/address/delete/{id}(id=${addr.idAddress})}"
+                                      onsubmit="return confirm('Hapus alamat ini?')">
+                                    <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        });
+        document.addEventListener('click', function(e) {
+            var dropdown = document.querySelector('.dropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                var menu = dropdown.querySelector('.dropdown-menu');
+                if (menu) menu.classList.remove('show');
+            }
+        });
+        var toggle = document.querySelector('.dropdown-toggle');
+        if (toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var menu = this.nextElementSibling;
+                if (menu) menu.classList.toggle('show');
+            });
+        }
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(el) {
+                el.style.opacity = '0';
+                setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

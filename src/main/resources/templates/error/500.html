@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="id">
+<head th:replace="~{fragments/header :: head('500 Server Error - LiquidPedia')}">
+    <title>500 Server Error - LiquidPedia</title>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="error-page">
+        <div class="error-icon">&#9888;</div>
+        <h1>500</h1>
+        <p>Yah, coil-nya kelebihan watt nih!</p>
+        <p style="margin-bottom:32px;font-size:1rem;">Maaf, terjadi kesalahan pada server kami. Tim teknis lagi nge-fix, pantau terus ya!</p>
+        <a href="/" class="btn btn-primary" style="padding:14px 40px;">Kembali ke Beranda</a>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

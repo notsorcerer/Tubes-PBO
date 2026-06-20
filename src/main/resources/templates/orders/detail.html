@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="id">
+<head th:replace="~{fragments/header :: head('Order Detail - LiquidPedia')}">
+    <title>Order Detail - LiquidPedia</title>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <section class="section">
+        <div class="container">
+            <a href="/orders" style="color:var(--primary);font-weight:600;display:inline-block;margin-bottom:24px;">&larr; Kembali</a>
+
+            <div class="order-card">
+                <div class="order-header">
+                    <div>
+                        <h2 style="font-family:'Syne',sans-serif;">Order #<span th:text="${order.idOrder}">001</span></h2>
+                        <span style="color:var(--text-light);" th:text="${order.orderDate}">01 Jan 2026</span>
+                    </div>
+                    <span th:classappend="${order.status.name() == 'PENDING'} ? 'badge badge-warning' : 
+                                        ${order.status.name() == 'PROCESSING'} ? 'badge badge-primary' :
+                                        ${order.status.name() == 'SHIPPED'} ? 'badge badge-accent' :
+                                        ${order.status.name() == 'DELIVERED'} ? 'badge badge-success' : 'badge'" class="badge" th:text="${order.status.name()}">STATUS</span>
+                </div>
+            </div>
+
+            <div class="order-detail-grid">
+                <div>
+                    <div class="checkout-section">
+                        <h3>Item Pesanan</h3>
+                        <div th:each="item : ${order.orderItems}" style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--gray-200);">
+                            <div>
+                                <strong th:text="${item.produk.nameProduk}">Nama</strong>
+                                <span style="color:var(--text-light);font-size:0.85rem;display:block;">x<span th:text="${item.jumlah}">1</span></span>
+                            </div>
+                            <span>Rp<span th:text="${item.subTotal}">150000</span></span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;padding:16px 0 0;font-weight:700;font-size:1.1rem;">
+                            <span>Total</span>
+                            <span style="color:var(--primary);">Rp<span th:text="${order.totalPrice}">150000</span></span>
+                        </div>
+                    </div>
+
+                    <div class="checkout-section" th:if="${order.voucher}">
+                        <h3>Voucher</h3>
+                        <p>Kode: <strong th:text="${order.voucher.kodeVoucher}">VOUCHER</strong></p>
+                        <p>Diskon: <span th:text="${order.voucher.discount * 100}">10</span>%</p>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="checkout-section" th:if="${order.payment}">
+                        <h3>Pembayaran</h3>
+                        <p th:if="${order.payment.paymentType == 'TRANSFER_BANK'}"><strong>Transfer Bank</strong></p>
+                        <p th:if="${order.payment.paymentType == 'QRIS'}"><strong>QRIS</strong></p>
+                        <p th:if="${order.payment.paymentType == 'COD'}"><strong>Cash on Delivery</strong></p>
+                        <p>Status: <span th:classappend="${order.payment.status == 'SUCCESS'} ? 'stok-tersedia' : 'stok-habis'" th:text="${order.payment.status}">PENDING</span></p>
+                    </div>
+
+                    <div class="checkout-section" th:if="${order.delivery}">
+                        <h3>Pengiriman</h3>
+                        <p>Kurir: <strong th:text="${order.delivery.kurir}">JNE</strong></p>
+                        <p th:if="${order.delivery.noResi}">No. Resi: <strong th:text="${order.delivery.noResi}">RESI</strong></p>
+                        <p>Status: <span th:text="${order.delivery.statusDelivery}">PENDING</span></p>
+                        <p th:if="${order.delivery.address}">
+                            Alamat: <span th:text="${order.delivery.address.address}">Alamat</span>
+                        </p>
+                    </div>
+
+                    <div style="margin-top:16px;" th:if="${canCancel}">
+                        <form th:action="@{/orders/{id}/cancel(id=${order.idOrder})}" method="post"
+                              onsubmit="return confirm('Yakin ingin membatalkan pesanan ini?')">
+                            <button type="submit" class="btn btn-danger btn-block">Batalkan Order</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        });
+        document.addEventListener('click', function(e) {
+            var dropdown = document.querySelector('.dropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                var menu = dropdown.querySelector('.dropdown-menu');
+                if (menu) menu.classList.remove('show');
+            }
+        });
+        var toggle = document.querySelector('.dropdown-toggle');
+        if (toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var menu = this.nextElementSibling;
+                if (menu) menu.classList.toggle('show');
+            });
+        }
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(el) {
+                el.style.opacity = '0';
+                setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

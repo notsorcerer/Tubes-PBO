@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="id"
+      th:with="content=~{::content}">
+<head th:replace="~{admin/layout/adminLayout :: head('Form Kategori - LiquidPedia Admin')}">
+    <title>Form Kategori - LiquidPedia Admin</title>
+</head>
+<body th:replace="~{admin/layout/adminLayout :: layout}">
+<th:block th:fragment="content">
+    <div class="admin-toolbar">
+        <h2 style="font-family:'Syne',sans-serif;font-weight:700;" th:text="${categoryDto.id != null} ? 'Edit Kategori' : 'Tambah Kategori'">
+            Form Kategori
+        </h2>
+        <a href="/admin/categories" class="btn btn-outline" style="border-color:var(--gray-300);color:var(--text);">
+            <i class="ti ti-arrow-left"></i> Kembali
+        </a>
+    </div>
+
+    <div class="admin-card" style="max-width:600px;">
+        <form method="post" th:action="${categoryDto.id != null} ? @{/admin/categories/{id}/edit(id=${categoryDto.id})} : @{/admin/categories/create}"
+              class="admin-form">
+            <div class="form-group">
+                <label class="form-label">Nama Kategori</label>
+                <input type="text" name="categoryName" class="form-input" th:value="${categoryDto.categoryName}"
+                       placeholder="Masukkan nama kategori">
+                <div th:if="${#fields.hasErrors('categoryName')}" th:errors="*{categoryName}" class="form-error"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Deskripsi <small style="color:var(--text-light);">(opsional)</small></label>
+                <textarea name="deskripsi" class="form-textarea" placeholder="Masukkan deskripsi kategori" th:text="${categoryDto.deskripsi}"></textarea>
+            </div>
+
+            <div style="display:flex;gap:12px;padding-top:20px;border-top:1px solid var(--gray-200);">
+                <button type="submit" class="btn btn-primary" style="padding:12px 32px;">
+                    <i class="ti ti-device-floppy"></i> Simpan
+                </button>
+                <a href="/admin/categories" class="btn btn-outline" style="border-color:var(--gray-300);color:var(--text);">Batal</a>
+            </div>
+        </form>
+    </div>
+</th:block>
+</html>

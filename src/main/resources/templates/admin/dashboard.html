@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="id"
+      th:with="content=~{::content}">
+<head th:replace="~{admin/layout/adminLayout :: head('Dashboard - LiquidPedia Admin')}">
+    <title>Dashboard - LiquidPedia Admin</title>
+</head>
+<body th:replace="~{admin/layout/adminLayout :: layout}">
+<th:block th:fragment="content">
+    <div class="admin-dashboard">
+        <!-- Metric Cards -->
+        <div class="admin-metrics">
+            <div class="admin-metric-card">
+                <div class="admin-metric-icon" style="background: rgba(216,64,64,0.1); color: var(--primary);">
+                    <i class="ti ti-package"></i>
+                </div>
+                <div class="admin-metric-info">
+                    <span class="admin-metric-value" th:text="${stats.totalProduk}">0</span>
+                    <span class="admin-metric-label">Total Produk</span>
+                </div>
+            </div>
+            <div class="admin-metric-card">
+                <div class="admin-metric-icon" style="background: rgba(142,22,22,0.1); color: var(--secondary);">
+                    <i class="ti ti-tag"></i>
+                </div>
+                <div class="admin-metric-info">
+                    <span class="admin-metric-value" th:text="${stats.totalKategori}">0</span>
+                    <span class="admin-metric-label">Total Kategori</span>
+                </div>
+            </div>
+            <div class="admin-metric-card">
+                <div class="admin-metric-icon" style="background: rgba(40,167,69,0.1); color: #28a745;">
+                    <i class="ti ti-star"></i>
+                </div>
+                <div class="admin-metric-info">
+                    <span class="admin-metric-value" th:text="${stats.totalBestSeller}">0</span>
+                    <span class="admin-metric-label">Best Seller</span>
+                </div>
+            </div>
+            <div class="admin-metric-card">
+                <div class="admin-metric-icon" style="background: rgba(0,123,255,0.1); color: #007bff;">
+                    <i class="ti ti-sparkles"></i>
+                </div>
+                <div class="admin-metric-info">
+                    <span class="admin-metric-value" th:text="${stats.totalNewArrival}">0</span>
+                    <span class="admin-metric-label">New Arrival</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Produk per Kategori Table -->
+        <div class="admin-card" style="margin-top:32px;">
+            <h3 class="admin-card-title">Produk per Kategori</h3>
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Kategori</th>
+                        <th>Jumlah Produk</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${stats.produkPerCategory}">
+                        <td th:text="${item.namaKategori}">Kategori</td>
+                        <td><span class="admin-badge admin-badge-primary" th:text="${item.jumlahProduk}">0</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</th:block>
+</html>

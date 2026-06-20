@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+  <rect width="300" height="300" fill="#E0E0E0"/>
+  <g transform="translate(150,120)" fill="none" stroke="#B0B0B0" stroke-width="2">
+    <rect x="-40" y="-30" width="80" height="60" rx="4"/>
+    <path d="M-40,-10 L-10,15 L10,-10 L40,20"/>
+    <line x1="-30" y1="-50" x2="-30" y2="-20"/>
+    <line x1="30" y1="-50" x2="30" y2="-20"/>
+  </g>
+  <text x="150" y="200" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" fill="#888888">No Image</text>
+</svg>

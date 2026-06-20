@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="id">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} ?: 'Admin - LiquidPedia'">Admin - LiquidPedia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.24.0/dist/tabler-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body th:fragment="layout">
+
+<div class="admin-wrapper">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-sidebar-header">
+            <a href="/admin/dashboard" class="admin-logo">
+                <span class="brand-icon">&#9763;</span>
+                <span class="admin-logo-text">Liquid<span class="brand-highlight">Pedia</span></span>
+            </a>
+            <span class="admin-label">Admin Panel</span>
+        </div>
+
+        <nav class="admin-nav">
+            <a href="/admin/dashboard" class="admin-nav-item" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/dashboard')} ? 'active' : ''">
+                <i class="ti ti-dashboard"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/admin/products" class="admin-nav-item" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/products')} ? 'active' : ''">
+                <i class="ti ti-package"></i>
+                <span>Produk</span>
+            </a>
+            <a href="/admin/categories" class="admin-nav-item" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/categories')} ? 'active' : ''">
+                <i class="ti ti-tag"></i>
+                <span>Kategori</span>
+            </a>
+            <a href="/admin/orders" class="admin-nav-item" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/orders')} ? 'active' : ''">
+                <i class="ti ti-truck-delivery"></i>
+                <span>Pesanan</span>
+            </a>
+        </nav>
+
+        <div class="admin-sidebar-footer">
+            <form method="post" th:action="@{/admin/logout}">
+                <button type="submit" class="admin-nav-item admin-logout-btn">
+                    <i class="ti ti-logout"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Overlay for mobile -->
+    <div class="admin-overlay" id="adminOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <!-- Topbar -->
+        <header class="admin-topbar">
+            <button class="admin-hamburger" onclick="toggleSidebar()">
+                <i class="ti ti-menu-2"></i>
+            </button>
+
+            <div class="admin-topbar-title" th:text="${pageTitle} ?: 'Dashboard'">Dashboard</div>
+
+            <div class="admin-topbar-right">
+                <div class="admin-user">
+                    <div class="admin-avatar" th:text="${#strings.substring(#authentication.principal.username, 0, 1)}">A</div>
+                    <span class="admin-user-name" sec:authentication="principal.username">admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Toast Notifications -->
+        <div th:if="${successMessage}" class="toast toast-success" th:text="${successMessage}">Success</div>
+        <div th:if="${errorMessage}" class="toast toast-error" th:text="${errorMessage}">Error</div>
+
+        <!-- Page Content -->
+        <div class="admin-content">
+            <div th:replace="${content}"></div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('adminSidebar').classList.toggle('active');
+        document.getElementById('adminOverlay').classList.toggle('active');
+    }
+
+    setTimeout(function() {
+        document.querySelectorAll('.toast').forEach(function(el) {
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(100%)';
+            setTimeout(function() { el.remove(); }, 300);
+        });
+    }, 3000);
+
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.admin-nav-item') || e.target.closest('.admin-hamburger')) return;
+    });
+</script>
+</body>
+</html>

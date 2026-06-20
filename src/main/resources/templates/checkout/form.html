@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="id">
+<head th:replace="~{fragments/header :: head('Checkout - LiquidPedia')}">
+    <title>Checkout - LiquidPedia</title>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <div class="container">
+        <div class="checkout-grid">
+            <div>
+                <form method="post" th:action="@{/checkout(voucherCode=${voucherCode})}" th:object="${checkoutDto}">
+                    <div class="checkout-section">
+                        <h3>Alamat Pengiriman</h3>
+                        <div th:if="${#lists.isEmpty(addresses)}" style="color:var(--text-light);margin-bottom:12px;">
+                            Belum ada alamat. <a href="/profile" style="color:var(--primary);font-weight:600;">Tambah alamat</a>
+                        </div>
+                        <div class="form-group" th:unless="${#lists.isEmpty(addresses)}">
+                            <select class="form-select" name="addressId">
+                                <option value="">Pilih Alamat</option>
+                                <option th:each="addr : ${addresses}" th:value="${addr.idAddress}"
+                                        th:text="${addr.label} + ' - ' + ${addr.receiverName} + ' (' + ${addr.city} + ')'"
+                                        th:selected="${addr.isDefault}">Alamat</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="checkout-section">
+                        <h3>Metode Pembayaran</h3>
+                        <div class="form-group">
+                            <label class="form-label">Pilih Metode</label>
+                            <select class="form-select" name="paymentMethod" id="paymentMethod" onchange="togglePayment()">
+                                <option value="TRANSFER_BANK">Transfer Bank</option>
+                                <option value="QRIS">QRIS</option>
+                                <option value="COD">Cash on Delivery (COD)</option>
+                            </select>
+                        </div>
+
+                        <div id="transferBank" class="payment-detail">
+                            <div class="form-group">
+                                <label class="form-label">No. Rekening</label>
+                                <input type="text" class="form-input" name="rekNumber" placeholder="1234567890">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nama Bank</label>
+                                <input type="text" class="form-input" name="bankName" placeholder="BCA / Mandiri / BNI">
+                            </div>
+                        </div>
+
+                        <div id="qris" class="payment-detail" style="display:none;">
+                            <div class="form-group">
+                                <label class="form-label">Kode QR (scan)</label>
+                                <input type="text" class="form-input" name="kodeQR" placeholder="QR Code ID">
+                            </div>
+                        </div>
+
+                        <div id="cod" class="payment-detail" style="display:none;">
+                            <div class="form-group">
+                                <label class="form-label">Nama Penerima</label>
+                                <input type="text" class="form-input" name="receiverName" placeholder="Nama penerima">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Alamat Pengiriman</label>
+                                <textarea class="form-textarea" name="shippingAddress" placeholder="Alamat lengkap"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="checkout-section">
+                        <h3>Kurir Pengiriman</h3>
+                        <div class="form-group">
+                            <label class="form-label">Nama Kurir</label>
+                            <input type="text" class="form-input" name="kurir" placeholder="JNE / J&T / SiCepat / dll">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" style="padding:16px;font-size:1.1rem;">Konfirmasi Order</button>
+                </form>
+            </div>
+
+            <div>
+                <div class="checkout-section">
+                    <h3>Ringkasan Order</h3>
+                    <div th:each="item : ${cart.cartItems}" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray-200);">
+                        <span><span th:text="${item.produk.nameProduk}">Nama</span> x<span th:text="${item.qty}">1</span></span>
+                        <span>Rp<span th:text="${item.subTotal}">150000</span></span>
+                    </div>
+                    <div style="margin-top:16px;">
+                        <div class="cart-summary-row">
+                            <span>Subtotal</span>
+                            <span>Rp<span th:text="${cart.totalPrice}">150000</span></span>
+                        </div>
+                        <div class="cart-summary-row">
+                            <span>Ongkir</span>
+                            <span>Akan dihitung</span>
+                        </div>
+                        <div class="cart-summary-row total">
+                            <span>Total</span>
+                            <span>Rp<span th:text="${cart.totalPrice}">150000</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        function togglePayment() {
+            var method = document.getElementById('paymentMethod').value;
+            document.querySelectorAll('.payment-detail').forEach(function(el) { el.style.display = 'none'; });
+            if (method === 'TRANSFER_BANK') document.getElementById('transferBank').style.display = 'block';
+            else if (method === 'QRIS') document.getElementById('qris').style.display = 'block';
+            else if (method === 'COD') document.getElementById('cod').style.display = 'block';
+        }
+
+        document.getElementById('hamburger').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        });
+        document.addEventListener('click', function(e) {
+            var dropdown = document.querySelector('.dropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                var menu = dropdown.querySelector('.dropdown-menu');
+                if (menu) menu.classList.remove('show');
+            }
+        });
+        var toggle = document.querySelector('.dropdown-toggle');
+        if (toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var menu = this.nextElementSibling;
+                if (menu) menu.classList.toggle('show');
+            });
+        }
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(el) {
+                el.style.opacity = '0';
+                setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

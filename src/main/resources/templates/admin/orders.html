@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      lang="id"
+      th:with="content=~{::content}">
+<head th:replace="~{admin/layout/adminLayout :: head('Pesanan - LiquidPedia Admin')}">
+    <title>Pesanan - LiquidPedia Admin</title>
+</head>
+<body th:replace="~{admin/layout/adminLayout :: layout}">
+<th:block th:fragment="content">
+    <div class="admin-toolbar">
+        <h2 style="font-family:'Syne',sans-serif;font-weight:700;">Manajemen Pesanan</h2>
+    </div>
+
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Tanggal</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th style="width:200px;">Update Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="order : ${orders}">
+                    <td><strong>#<span th:text="${order.idOrder}">1</span></strong></td>
+                    <td th:text="${order.customer?.nameUser}">Customer</td>
+                    <td th:text="${order.orderDate}">01 Jan 2026</td>
+                    <td class="admin-price">Rp <span th:text="${order.totalPrice}">0</span></td>
+                    <td>
+                        <span th:classappend="${order.status.name() == 'PENDING'} ? 'admin-badge admin-badge-warning' : 
+                                            ${order.status.name() == 'PROCESSING'} ? 'admin-badge admin-badge-info' :
+                                            ${order.status.name() == 'SHIPPED'} ? 'admin-badge admin-badge-secondary' :
+                                            ${order.status.name() == 'DELIVERED'} ? 'admin-badge admin-badge-success' : 
+                                            ${order.status.name() == 'CANCELLED'} ? 'admin-badge admin-badge-danger' : 'admin-badge'"
+                              class="admin-badge" th:text="${order.status.name()}">STATUS</span>
+                    </td>
+                    <td>
+                        <form method="post" th:action="@{/admin/orders/{id}/status(id=${order.idOrder})}" style="display:flex;gap:8px;align-items:center;">
+                            <select name="status" class="form-select" style="width:auto;padding:6px 10px;font-size:0.85rem;max-width:140px;">
+                                <option value="PENDING" th:selected="${order.status.name() == 'PENDING'}">PENDING</option>
+                                <option value="PROCESSING" th:selected="${order.status.name() == 'PROCESSING'}">PROCESSING</option>
+                                <option value="SHIPPED" th:selected="${order.status.name() == 'SHIPPED'}">SHIPPED</option>
+                                <option value="DELIVERED" th:selected="${order.status.name() == 'DELIVERED'}">DELIVERED</option>
+                                <option value="CANCELLED" th:selected="${order.status.name() == 'CANCELLED'}">CANCELLED</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-secondary" style="white-space:nowrap;">
+                                <i class="ti ti-refresh"></i> Update
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(orders)}">
+                    <td colspan="6" style="text-align:center;padding:48px;color:var(--text-light);">
+                        <i class="ti ti-truck-off" style="font-size:2rem;display:block;margin-bottom:12px;"></i>
+                        Belum ada pesanan
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</th:block>
+</html>

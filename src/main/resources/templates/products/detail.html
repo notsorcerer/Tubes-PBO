@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="id">
+<head th:replace="~{fragments/header :: head('Detail - LiquidPedia')}">
+    <title>Detail - LiquidPedia</title>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+    <div class="container">
+        <div class="produk-detail">
+            <div>
+                <img th:if="${produk.imageUrl}" th:src="${produk.imageUrl}" alt="" class="produk-detail-image">
+                <div th:unless="${produk.imageUrl}" class="produk-detail-image" style="display:flex;align-items:center;justify-content:center;font-size:5rem;color:var(--gray-300);">
+                    <span>&#9881;</span>
+                </div>
+            </div>
+            <div class="produk-detail-info">
+                <div class="badge-group" style="margin-bottom:12px;">
+                    <span class="badge badge-secondary" th:text="${produk.category?.categoryName}">Kategori</span>
+                    <span class="badge badge-primary" th:if="${produk.isBestSeller}">Best Seller</span>
+                    <span class="badge badge-accent" th:if="${produk.isNewArrival}">New</span>
+                </div>
+                <h1 th:text="${produk.nameProduk}">Nama Produk</h1>
+                <div class="price">Rp<span th:text="${produk.price}">150000</span></div>
+                <div style="margin-bottom:16px;">
+                    <span th:if="${produk.stock > 0}" class="stok-tersedia">Stok: <span th:text="${produk.stock}">10</span> tersedia</span>
+                    <span th:if="${produk.stock <= 0}" class="stok-habis">Stok Habis</span>
+                </div>
+                <div class="deskripsi" th:text="${produk.deskripsi}">Deskripsi produk</div>
+
+                <div sec:authorize="isAuthenticated()">
+                    <form th:action="@{/cart/add/{id}(id=${produk.idProduk})}" method="post">
+                        <div class="qty-input">
+                            <span style="font-weight:600;">Jumlah:</span>
+                            <button type="button" class="qty-btn" onclick="var i=this.nextElementSibling; if(i.value>1)i.value--;">-</button>
+                            <input type="number" name="qty" value="1" min="1" th:max="${produk.stock}">
+                            <button type="button" class="qty-btn" onclick="var i=this.previousElementSibling; i.value++;">+</button>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;">Tambah ke Cart</button>
+                    </form>
+                </div>
+                <a sec:authorize="!isAuthenticated()" href="/login" class="btn btn-primary" style="padding:14px 40px;font-size:1rem;">Login untuk Membeli</a>
+            </div>
+        </div>
+
+        <div class="reviews-section">
+            <h2 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:24px;">Review &amp; Rating</h2>
+
+            <div class="rating-summary">
+                <div class="rating-number" th:text="${avgRating}">4.5</div>
+                <div>
+                    <div class="stars">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= avgRating} ? '&#9733;' : '&#9734;'">&#9733;</span>
+                    </div>
+                    <span style="color:var(--text-light);font-size:0.9rem;" th:text="${#lists.size(reviews)} + ' review'">0 review</span>
+                </div>
+            </div>
+
+            <div th:if="${#lists.isEmpty(reviews)}" style="text-align:center;padding:40px 0;color:var(--text-light);">
+                Belum ada review untuk produk ini
+            </div>
+
+            <div class="review-card" th:each="review : ${reviews}">
+                <div class="review-header">
+                    <span class="reviewer-name" th:text="${review.customer.nameUser}">User</span>
+                    <span style="font-size:0.85rem;color:var(--text-light);">Telah review</span>
+                </div>
+                <div class="stars" style="margin-bottom:8px;">
+                    <span th:each="i : ${#numbers.sequence(1, 5)}" th:text="${i <= review.rating} ? '&#9733;' : '&#9734;'">&#9733;</span>
+                </div>
+                <p th:text="${review.comment}" th:if="${review.comment}">Komentar</p>
+            </div>
+
+            <div sec:authorize="hasRole('CUSTOMER')" th:if="${hasPurchased and !alreadyReviewed}" style="margin-top:40px;background:var(--white);padding:24px;border-radius:var(--radius);box-shadow:var(--shadow);">
+                <h3 style="font-family:'Syne',sans-serif;margin-bottom:16px;">Tulis Review</h3>
+                <form th:action="@{/products/{id}/review(id=${produk.idProduk})}" method="post" th:object="${reviewDto}">
+                    <div class="form-group">
+                        <label class="form-label">Rating</label>
+                        <div style="display:flex;gap:8px;" id="starRating">
+                            <button type="button" class="star-btn" data-value="1" style="background:none;border:none;font-size:2rem;cursor:pointer;color:var(--gray-300);">&#9733;</button>
+                            <button type="button" class="star-btn" data-value="2" style="background:none;border:none;font-size:2rem;cursor:pointer;color:var(--gray-300);">&#9733;</button>
+                            <button type="button" class="star-btn" data-value="3" style="background:none;border:none;font-size:2rem;cursor:pointer;color:var(--gray-300);">&#9733;</button>
+                            <button type="button" class="star-btn" data-value="4" style="background:none;border:none;font-size:2rem;cursor:pointer;color:var(--gray-300);">&#9733;</button>
+                            <button type="button" class="star-btn" data-value="5" style="background:none;border:none;font-size:2rem;cursor:pointer;color:var(--gray-300);">&#9733;</button>
+                        </div>
+                        <input type="hidden" name="rating" id="ratingInput" value="0">
+                        <div class="form-error" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Komentar</label>
+                        <textarea class="form-textarea" name="comment" rows="3" placeholder="Bagikan pengalamanmu..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Kirim Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        });
+        document.addEventListener('click', function(e) {
+            var dropdown = document.querySelector('.dropdown');
+            if (dropdown && !dropdown.contains(e.target)) {
+                var menu = dropdown.querySelector('.dropdown-menu');
+                if (menu) menu.classList.remove('show');
+            }
+        });
+        var toggle = document.querySelector('.dropdown-toggle');
+        if (toggle) {
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var menu = this.nextElementSibling;
+                if (menu) menu.classList.toggle('show');
+            });
+        }
+
+        document.querySelectorAll('.star-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var val = parseInt(this.dataset.value);
+                document.getElementById('ratingInput').value = val;
+                document.querySelectorAll('.star-btn').forEach(function(s) {
+                    s.style.color = parseInt(s.dataset.value) <= val ? '#ffc107' : 'var(--gray-300)';
+                });
+            });
+        });
+
+        setTimeout(function() {
+            document.querySelectorAll('.alert').forEach(function(el) {
+                el.style.opacity = '0';
+                setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
