@@ -57,6 +57,14 @@ public class ProdukService {
         return produkRepository.findByCategoryIdCategory(categoryId);
     }
 
+    public Page<Produk> search(String keyword, int page, int size) {
+        return produkRepository.searchByKeyword(keyword, PageRequest.of(page, size));
+    }
+
+    public Page<Produk> searchByCategory(String keyword, Long categoryId, int page, int size) {
+        return produkRepository.searchByKeywordAndCategory(keyword, categoryId, PageRequest.of(page, size));
+    }
+
     public List<Category> findAllCategories() {
         return categoryRepository.findAll();
     }

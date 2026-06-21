@@ -8,19 +8,15 @@
     <div th:replace="~{fragments/header :: navbar}"></div>
 
     <div class="error-page">
-        <div class="error-icon">&#9763;</div>
+        <div class="error-icon">&#128168;</div>
         <h1>404</h1>
         <p>Waduh, halaman ini seperti smoke — hilang begitu saja!</p>
-        <p style="margin-bottom:32px;font-size:1rem;">Mungkin liquid-nya terlalu strong, sampai halamannya nggak kelihatan.</p>
-        <a href="/" class="btn btn-primary" style="padding:14px 40px;">Kembali ke Beranda</a>
+        <p style="font-size:1rem;">Mungkin liquid-nya terlalu strong, sampai halamannya nggak kelihatan.</p>
+        <div class="error-action">
+            <a href="/" class="btn btn-primary" style="padding:14px 40px;">Kembali ke Beranda</a>
+        </div>
     </div>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
-
-    <script>
-        document.getElementById('hamburger').addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('active');
-        });
-    </script>
 </body>
 </html>

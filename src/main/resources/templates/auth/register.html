@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       lang="id">
-<head th:replace="~{fragments/header :: head('Sign Up - LiquidPedia')}">
-    <title>Sign Up - LiquidPedia</title>
+<head th:replace="~{fragments/header :: head('Daftar - LiquidPedia')}">
+    <title>Daftar - LiquidPedia</title>
 </head>
 <body>
     <div th:replace="~{fragments/header :: navbar}"></div>
@@ -11,8 +11,8 @@
 
     <div class="auth-page">
         <div class="auth-card">
-            <h1>Create Account</h1>
-            <p class="subtitle">Join LiquidPedia and start shopping</p>
+            <h1>Daftar</h1>
+            <p class="subtitle">Buat akun LiquidPedia baru</p>
 
             <form method="post" th:action="@{/register}" th:object="${registerDto}">
                 <div class="form-group">
@@ -39,21 +39,15 @@
                     <input type="password" th:field="*{confirmPassword}" class="form-input" placeholder="Ulangi password">
                     <div class="form-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block" style="padding:14px;">Sign Up</button>
+                <button type="submit" class="btn btn-primary btn-block" style="padding:14px;">Daftar</button>
             </form>
 
             <p class="auth-link">
-                Sudah punya akun? <a href="/login">Sign In</a>
+                Sudah punya akun? <a href="/login">Masuk</a>
             </p>
         </div>
     </div>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
-
-    <script>
-        document.getElementById('hamburger').addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('active');
-        });
-    </script>
 </body>
 </html>

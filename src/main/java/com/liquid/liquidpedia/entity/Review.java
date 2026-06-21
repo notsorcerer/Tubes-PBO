@@ -18,7 +18,7 @@ public class Review {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private User customer;
 
     @Min(1)
     @Max(5)
@@ -50,8 +50,8 @@ public class Review {
     public void setIdReview(Long idReview) { this.idReview = idReview; }
     public Produk getProduk() { return produk; }
     public void setProduk(Produk produk) { this.produk = produk; }
-    public Customer getCustomer() { return customer; }
-    public void setCustomer(Customer customer) { this.customer = customer; }
+    public User getCustomer() { return customer; }
+    public void setCustomer(User customer) { this.customer = customer; }
     public Float getRating() { return rating; }
     public void setRating(Float rating) { this.rating = rating; }
     public String getComment() { return comment; }

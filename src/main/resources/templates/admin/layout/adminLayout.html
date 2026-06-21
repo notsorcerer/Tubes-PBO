@@ -8,7 +8,7 @@
     <title th:text="${title} ?: 'Admin - LiquidPedia'">Admin - LiquidPedia</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.24.0/dist/tabler-icons.min.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -26,19 +26,19 @@
         </div>
 
         <nav class="admin-nav">
-            <a href="/admin/dashboard" class="admin-nav-item" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/dashboard')} ? 'active' : ''">
+            <a href="/admin/dashboard" class="admin-nav-item" th:classappend="${#strings.contains(#request.requestURI, '/admin/dashboard')} ? 'active' : ''">
                 <i class="ti ti-dashboard"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="/admin/products" class="admin-nav-item" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/products')} ? 'active' : ''">
+            <a href="/admin/products" class="admin-nav-item" th:classappend="${#strings.contains(#request.requestURI, '/admin/products')} ? 'active' : ''">
                 <i class="ti ti-package"></i>
                 <span>Produk</span>
             </a>
-            <a href="/admin/categories" class="admin-nav-item" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/categories')} ? 'active' : ''">
+            <a href="/admin/categories" class="admin-nav-item" th:classappend="${#strings.contains(#request.requestURI, '/admin/categories')} ? 'active' : ''">
                 <i class="ti ti-tag"></i>
                 <span>Kategori</span>
             </a>
-            <a href="/admin/orders" class="admin-nav-item" th:classappend="${#strings.contains(#httpServletRequest.requestURI, '/admin/orders')} ? 'active' : ''">
+            <a href="/admin/orders" class="admin-nav-item" th:classappend="${#strings.contains(#request.requestURI, '/admin/orders')} ? 'active' : ''">
                 <i class="ti ti-truck-delivery"></i>
                 <span>Pesanan</span>
             </a>

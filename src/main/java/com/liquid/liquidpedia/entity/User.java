@@ -3,10 +3,12 @@ package com.liquid.liquidpedia.entity;
 import com.liquid.liquidpedia.entity.enums.Role;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class User {
 
     @Id
@@ -21,9 +23,29 @@ public class User {
 
     private String phone;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
+    @Column(name = "role")
+    private Set<Role> roles = new HashSet<>();
+
+    @Column(name = "name_user")
+    private String nameUser;
+
+    @Column(name = "name_admin")
+    private String nameAdmin;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Address> addresses;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Order> orders;
+
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    private Cart cart;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Review> reviews;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -32,16 +54,6 @@ public class User {
     private LocalDateTime updatedAt;
 
     public User() {}
-
-    public User(Long id, String email, String password, String phone, Role role, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.role = role;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     @PrePersist
     protected void onCreate() {
@@ -62,8 +74,20 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
+    public Set<Role> getRoles() { return roles; }
+    public void setRoles(Set<Role> roles) { this.roles = roles; }
+    public String getNameUser() { return nameUser; }
+    public void setNameUser(String nameUser) { this.nameUser = nameUser; }
+    public String getNameAdmin() { return nameAdmin; }
+    public void setNameAdmin(String nameAdmin) { this.nameAdmin = nameAdmin; }
+    public List<Address> getAddresses() { return addresses; }
+    public void setAddresses(List<Address> addresses) { this.addresses = addresses; }
+    public List<Order> getOrders() { return orders; }
+    public void setOrders(List<Order> orders) { this.orders = orders; }
+    public Cart getCart() { return cart; }
+    public void setCart(Cart cart) { this.cart = cart; }
+    public List<Review> getReviews() { return reviews; }
+    public void setReviews(List<Review> reviews) { this.reviews = reviews; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

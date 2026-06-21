@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       lang="id">
-<head th:replace="~{fragments/header :: head('LiquidPedia')}">
+<head th:replace="~{fragments/header :: head('LiquidPedia - Toko Liquid Vape')}">
     <title>LiquidPedia</title>
 </head>
 <body>
@@ -13,10 +13,19 @@
 
     <!-- Hero -->
     <section class="hero">
-        <div class="container hero-content">
-            <h1>Elevate Your Vaping Experience</h1>
-            <p>Temukan koleksi liquid dan device vape terbaik dengan harga terjangkau. Flavor favoritmu ada di sini!</p>
-            <a href="/products" class="btn btn-primary" style="padding:16px 40px;font-size:1.1rem;">Explore Products</a>
+        <div class="container hero-content animate-fade-in">
+            <div class="hero-text">
+                <h1>Find Your<br><span class="highlight">Perfect Vibe</span></h1>
+                <p>Temukan koleksi liquid dan device vape terbaik dengan harga terjangkau. Flavor favoritmu ada di sini!</p>
+                <div class="hero-actions">
+                    <a href="/products" class="btn btn-primary" style="padding:14px 32px;font-size:1rem;">Lihat Produk</a>
+                    <a href="/products?bestSeller=true" class="btn btn-outline" style="padding:14px 32px;font-size:1rem;">Best Seller</a>
+                </div>
+            </div>
+            <div class="hero-card animate-fade-in">
+                <div class="hero-card-value">100+</div>
+                <div class="hero-card-label">Flavor Tersedia</div>
+            </div>
         </div>
     </section>
 
@@ -31,9 +40,10 @@
                 <div class="produk-card" th:each="produk : ${bestSellers}">
                     <img th:if="${produk.imageUrl}" th:src="${produk.imageUrl}" alt="" class="produk-card-image">
                     <div th:unless="${produk.imageUrl}" class="produk-card-image">
-                        <span>&#9881;</span>
+                        <img src="/img/placeholder.svg" alt="No image" style="width:100%;height:100%;object-fit:cover;">
                     </div>
                     <div class="produk-card-body">
+                        <span class="category-label" th:text="${produk.category?.categoryName}">Kategori</span>
                         <div class="badge-group">
                             <span class="badge badge-primary" th:if="${produk.isBestSeller}">Best Seller</span>
                             <span class="badge badge-accent" th:if="${produk.isNewArrival}">New</span>
@@ -59,8 +69,12 @@
                 <p>Pilih kategori yang kamu suka</p>
             </div>
             <div class="category-grid">
-                <a th:each="cat : ${categories}" th:href="@{/products(category=${cat.idCategory})}" class="category-card">
-                    <div class="icon">&#127871;</div>
+                <a th:each="cat : ${categories}"
+                   th:href="@{/products(category=${cat.idCategory})}"
+                   class="category-card"
+                   th:classappend="${catStat.index % 2 == 0} ? 'category-gradient-1' : 'category-gradient-2'">
+                    <div class="icon" th:if="${catStat.index % 2 == 0}">&#127871;</div>
+                    <div class="icon" th:unless="${catStat.index % 2 == 0}">&#128083;</div>
                     <h3 th:text="${cat.categoryName}">Kategori</h3>
                 </a>
             </div>
@@ -70,7 +84,8 @@
     <!-- Banner -->
     <section class="banner">
         <div class="container">
-            <h2>FIND FLAVORS THAT<br>MATCH YOUR VIBE</h2>
+            <h2>FIND FLAVORS THAT<br>MATCH YOUR <span class="highlight">VIBE</span></h2>
+            <a href="/products" class="btn btn-outline" style="padding:16px 40px;font-size:1.1rem;">Explore Now</a>
         </div>
     </section>
 
@@ -85,9 +100,10 @@
                 <div class="produk-card" th:each="produk : ${newArrivals}">
                     <img th:if="${produk.imageUrl}" th:src="${produk.imageUrl}" alt="" class="produk-card-image">
                     <div th:unless="${produk.imageUrl}" class="produk-card-image">
-                        <span>&#9881;</span>
+                        <img src="/img/placeholder.svg" alt="No image" style="width:100%;height:100%;object-fit:cover;">
                     </div>
                     <div class="produk-card-body">
+                        <span class="category-label" th:text="${produk.category?.categoryName}">Kategori</span>
                         <div class="badge-group">
                             <span class="badge badge-primary" th:if="${produk.isBestSeller}">Best Seller</span>
                             <span class="badge badge-accent" th:if="${produk.isNewArrival}">New</span>
@@ -106,32 +122,5 @@
     </section>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
-
-    <script>
-        document.getElementById('hamburger').addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('active');
-        });
-        document.addEventListener('click', function(e) {
-            var dropdown = document.querySelector('.dropdown');
-            if (dropdown && !dropdown.contains(e.target)) {
-                var menu = dropdown.querySelector('.dropdown-menu');
-                if (menu) menu.classList.remove('show');
-            }
-        });
-        var toggle = document.querySelector('.dropdown-toggle');
-        if (toggle) {
-            toggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                var menu = this.nextElementSibling;
-                if (menu) menu.classList.toggle('show');
-            });
-        }
-        setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(el) {
-                el.style.opacity = '0';
-                setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
-            });
-        }, 5000);
-    </script>
 </body>
 </html>

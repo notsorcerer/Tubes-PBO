@@ -13,7 +13,7 @@ public class Cart {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", unique = true)
-    private Customer customer;
+    private User customer;
 
     @Column(name = "total_price")
     private Double totalPrice = 0.0;
@@ -25,8 +25,8 @@ public class Cart {
 
     public Long getIdCart() { return idCart; }
     public void setIdCart(Long idCart) { this.idCart = idCart; }
-    public Customer getCustomer() { return customer; }
-    public void setCustomer(Customer customer) { this.customer = customer; }
+    public User getCustomer() { return customer; }
+    public void setCustomer(User customer) { this.customer = customer; }
     public Double getTotalPrice() { return totalPrice; }
     public void setTotalPrice(Double totalPrice) { this.totalPrice = totalPrice; }
     public List<CartItem> getCartItems() { return cartItems; }

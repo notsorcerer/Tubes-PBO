@@ -2,7 +2,7 @@ package com.liquid.liquidpedia.service;
 
 import com.liquid.liquidpedia.dto.AddressDto;
 import com.liquid.liquidpedia.entity.Address;
-import com.liquid.liquidpedia.entity.Customer;
+import com.liquid.liquidpedia.entity.User;
 import com.liquid.liquidpedia.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class AddressService {
     @Autowired
     private AddressRepository addressRepository;
 
-    public List<Address> getAddressesByCustomer(Customer customer) {
+    public List<Address> getAddressesByCustomer(User customer) {
         return addressRepository.findByCustomerId(customer.getId());
     }
 
@@ -25,7 +25,7 @@ public class AddressService {
     }
 
     @Transactional
-    public Address save(Customer customer, AddressDto dto) {
+    public Address save(User customer, AddressDto dto) {
         if (dto.isDefault()) {
             addressRepository.resetDefaultByCustomerId(customer.getId());
         }
@@ -43,7 +43,7 @@ public class AddressService {
     }
 
     @Transactional
-    public Address update(Customer customer, AddressDto dto) {
+    public Address update(User customer, AddressDto dto) {
         Address address = findById(dto.getIdAddress());
         if (!address.getCustomer().getId().equals(customer.getId())) {
             throw new RuntimeException("Alamat tidak ditemukan");
@@ -63,7 +63,7 @@ public class AddressService {
     }
 
     @Transactional
-    public void delete(Customer customer, Long addressId) {
+    public void delete(User customer, Long addressId) {
         Address address = findById(addressId);
         if (!address.getCustomer().getId().equals(customer.getId())) {
             throw new RuntimeException("Alamat tidak ditemukan");
@@ -72,7 +72,7 @@ public class AddressService {
     }
 
     @Transactional
-    public void setDefault(Customer customer, Long addressId) {
+    public void setDefault(User customer, Long addressId) {
         addressRepository.resetDefaultByCustomerId(customer.getId());
         Address address = findById(addressId);
         address.setIsDefault(true);

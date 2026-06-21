@@ -22,7 +22,7 @@ public class CartService {
     @Autowired
     private ProdukRepository produkRepository;
 
-    public Cart getCart(Customer customer) {
+    public Cart getCart(User customer) {
         return cartRepository.findByCustomerId(customer.getId())
                 .orElseGet(() -> {
                     Cart cart = new Cart();
@@ -34,7 +34,7 @@ public class CartService {
     }
 
     @Transactional
-    public Cart addItem(Customer customer, Long produkId, int qty) {
+    public Cart addItem(User customer, Long produkId, int qty) {
         Cart cart = getCart(customer);
         Produk produk = produkRepository.findById(produkId)
                 .orElseThrow(() -> new RuntimeException("Produk tidak ditemukan"));
@@ -57,6 +57,7 @@ public class CartService {
             item.setProduk(produk);
             item.setQty(qty);
             item.calculateSubTotal();
+            cartItemRepository.save(item);
             if (cart.getCartItems() == null) {
                 cart.setCartItems(new ArrayList<>());
             }
@@ -68,7 +69,7 @@ public class CartService {
     }
 
     @Transactional
-    public Cart removeItem(Customer customer, Long cartItemId) {
+    public Cart removeItem(User customer, Long cartItemId) {
         Cart cart = getCart(customer);
         CartItem item = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("Item tidak ditemukan"));
@@ -84,7 +85,7 @@ public class CartService {
     }
 
     @Transactional
-    public Cart updateQty(Customer customer, Long cartItemId, int qty) {
+    public Cart updateQty(User customer, Long cartItemId, int qty) {
         Cart cart = getCart(customer);
         CartItem item = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new RuntimeException("Item tidak ditemukan"));
@@ -109,7 +110,7 @@ public class CartService {
     }
 
     @Transactional
-    public void clearCart(Customer customer) {
+    public void clearCart(User customer) {
         Cart cart = getCart(customer);
         if (cart.getCartItems() != null) {
             cart.getCartItems().clear();
@@ -129,7 +130,7 @@ public class CartService {
         cart.setTotalPrice(total);
     }
 
-    public int getCartItemCount(Customer customer) {
+    public int getCartItemCount(User customer) {
         Cart cart = getCart(customer);
         return cart.getCartItems() == null ? 0 : cart.getCartItems().size();
     }

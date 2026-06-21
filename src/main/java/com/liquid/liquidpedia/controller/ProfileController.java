@@ -2,9 +2,10 @@ package com.liquid.liquidpedia.controller;
 
 import com.liquid.liquidpedia.dto.AddressDto;
 import com.liquid.liquidpedia.entity.Address;
-import com.liquid.liquidpedia.entity.Customer;
-import com.liquid.liquidpedia.repository.CustomerRepository;
+import com.liquid.liquidpedia.entity.User;
+import com.liquid.liquidpedia.repository.UserRepository;
 import com.liquid.liquidpedia.service.AddressService;
+import com.liquid.liquidpedia.service.CartService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,21 +22,25 @@ import java.util.List;
 public class ProfileController {
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private AddressService addressService;
+
+    @Autowired
+    private CartService cartService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @GetMapping("/profile")
     public String profile(Authentication authentication, Model model) {
-        Customer customer = getCustomer(authentication);
-        List<Address> addresses = addressService.getAddressesByCustomer(customer);
-        model.addAttribute("customer", customer);
+        User user = getUser(authentication);
+        List<Address> addresses = addressService.getAddressesByCustomer(user);
+        model.addAttribute("customer", user);
         model.addAttribute("addresses", addresses);
         model.addAttribute("addressDto", new AddressDto());
+        model.addAttribute("cartItemCount", cartService.getCartItemCount(user));
         return "profile/index";
     }
 
@@ -45,10 +50,10 @@ public class ProfileController {
                                 @RequestParam String phone,
                                 RedirectAttributes redirectAttributes) {
         try {
-            Customer customer = getCustomer(authentication);
-            customer.setNameUser(nameUser);
-            customer.setPhone(phone);
-            customerRepository.save(customer);
+            User user = getUser(authentication);
+            user.setNameUser(nameUser);
+            user.setPhone(phone);
+            userRepository.save(user);
             redirectAttributes.addFlashAttribute("success", "Profil berhasil diperbarui");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -63,15 +68,15 @@ public class ProfileController {
                                   @RequestParam String confirmPassword,
                                   RedirectAttributes redirectAttributes) {
         try {
-            Customer customer = getCustomer(authentication);
-            if (!passwordEncoder.matches(currentPassword, customer.getPassword())) {
+            User user = getUser(authentication);
+            if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
                 throw new RuntimeException("Password saat ini salah");
             }
             if (!newPassword.equals(confirmPassword)) {
                 throw new RuntimeException("Konfirmasi password tidak cocok");
             }
-            customer.setPassword(passwordEncoder.encode(newPassword));
-            customerRepository.save(customer);
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
             redirectAttributes.addFlashAttribute("success", "Password berhasil diubah");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -92,8 +97,8 @@ public class ProfileController {
             return "redirect:/profile";
         }
         try {
-            Customer customer = getCustomer(authentication);
-            addressService.save(customer, dto);
+            User user = getUser(authentication);
+            addressService.save(user, dto);
             redirectAttributes.addFlashAttribute("success", "Alamat berhasil ditambahkan");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -114,8 +119,8 @@ public class ProfileController {
             return "redirect:/profile";
         }
         try {
-            Customer customer = getCustomer(authentication);
-            addressService.update(customer, dto);
+            User user = getUser(authentication);
+            addressService.update(user, dto);
             redirectAttributes.addFlashAttribute("success", "Alamat berhasil diperbarui");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -128,8 +133,8 @@ public class ProfileController {
                                  Authentication authentication,
                                  RedirectAttributes redirectAttributes) {
         try {
-            Customer customer = getCustomer(authentication);
-            addressService.delete(customer, id);
+            User user = getUser(authentication);
+            addressService.delete(user, id);
             redirectAttributes.addFlashAttribute("success", "Alamat berhasil dihapus");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -142,8 +147,8 @@ public class ProfileController {
                                      Authentication authentication,
                                      RedirectAttributes redirectAttributes) {
         try {
-            Customer customer = getCustomer(authentication);
-            addressService.setDefault(customer, id);
+            User user = getUser(authentication);
+            addressService.setDefault(user, id);
             redirectAttributes.addFlashAttribute("success", "Alamat default berhasil diubah");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -151,9 +156,9 @@ public class ProfileController {
         return "redirect:/profile";
     }
 
-    private Customer getCustomer(Authentication authentication) {
+    private User getUser(Authentication authentication) {
         String email = authentication.getName();
-        return customerRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Customer tidak ditemukan"));
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User tidak ditemukan"));
     }
 }

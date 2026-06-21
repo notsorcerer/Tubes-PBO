@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
@@ -83,11 +84,11 @@ public class DatabaseSeeder implements CommandLineRunner {
         voucherRepository.save(voucher);
 
         if (!userRepository.existsByEmail("admin@liquidpedia.com")) {
-            Admin admin = new Admin();
+            User admin = new User();
             admin.setEmail("admin@liquidpedia.com");
             admin.setPassword(passwordEncoder.encode("Admin123!"));
-            admin.setRole(Role.ADMIN);
-            admin.setNameAdmin("Admin LiquidPedia");
+            admin.setRoles(Set.of(Role.ADMIN, Role.CUSTOMER));
+            admin.setNameUser("Admin LiquidPedia");
             userRepository.save(admin);
         }
     }

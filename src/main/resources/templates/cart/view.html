@@ -13,7 +13,7 @@
 
     <section class="section">
         <div class="container">
-            <h2 style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:24px;">Shopping Cart</h2>
+            <h2 style="font-weight:700;margin-bottom:24px;">Shopping Cart</h2>
 
             <div th:if="${#lists.isEmpty(cart.cartItems)}" style="text-align:center;padding:60px 0;">
                 <p style="font-size:3rem;margin-bottom:16px;">&#128722;</p>
@@ -36,8 +36,8 @@
                         <tr th:each="item : ${cart.cartItems}">
                             <td style="display:flex;align-items:center;gap:12px;">
                                 <img th:if="${item.produk.imageUrl}" th:src="${item.produk.imageUrl}" alt="" class="cart-item-image">
-                                <div th:unless="${item.produk.imageUrl}" style="width:64px;height:64px;background:var(--gray-200);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;">
-                                    <span>&#9881;</span>
+                                <div th:unless="${item.produk.imageUrl}" class="cart-item-image" style="display:flex;align-items:center;justify-content:center;background:var(--gray-200);">
+                                    <img src="/img/placeholder.svg" alt="No image" style="width:100%;height:100%;object-fit:cover;">
                                 </div>
                                 <div>
                                     <strong th:text="${item.produk.nameProduk}">Nama</strong>
@@ -46,7 +46,7 @@
                             <td>Rp<span th:text="${item.produk.price}">150000</span></td>
                             <td>
                                 <form th:action="@{/cart/update/{id}(id=${item.idCartItem})}" method="post" style="display:flex;align-items:center;gap:8px;">
-                                    <input type="number" name="qty" th:value="${item.qty}" min="1" style="width:60px;padding:6px;border:1px solid var(--gray-300);border-radius:4px;text-align:center;">
+                                    <input type="number" name="qty" th:value="${item.qty}" min="1" style="width:60px;padding:6px;border:1px solid var(--gray-300);border-radius:var(--radius);text-align:center;">
                                     <button type="submit" class="btn btn-sm btn-secondary">Update</button>
                                 </form>
                             </td>
@@ -66,7 +66,7 @@
                         <button type="submit" class="btn btn-secondary">Terapkan</button>
                     </form>
                     <div th:if="${voucherError}" style="color:#dc3545;font-size:0.9rem;margin-bottom:12px;" th:text="${voucherError}">Error</div>
-                    <div th:if="${voucher}" style="color:#28a745;font-size:0.9rem;margin-bottom:12px;">
+                    <div th:if="${voucher}" style="color:#22c55e;font-size:0.9rem;margin-bottom:12px;">
                         Voucher <strong th:text="${voucher.kodeVoucher}">KODE</strong> diterapkan! Diskon <span th:text="${voucher.discount * 100}">10</span>%
                     </div>
 
@@ -74,7 +74,7 @@
                         <span>Subtotal</span>
                         <span>Rp<span th:text="${cart.totalPrice}">150000</span></span>
                     </div>
-                    <div class="cart-summary-row" th:if="${discount}" style="color:#28a745;">
+                    <div class="cart-summary-row" th:if="${discount}" style="color:#22c55e;">
                         <span>Diskon Voucher</span>
                         <span>-Rp<span th:text="${discount}">15000</span></span>
                     </div>
@@ -90,32 +90,5 @@
     </section>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
-
-    <script>
-        document.getElementById('hamburger').addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('active');
-        });
-        document.addEventListener('click', function(e) {
-            var dropdown = document.querySelector('.dropdown');
-            if (dropdown && !dropdown.contains(e.target)) {
-                var menu = dropdown.querySelector('.dropdown-menu');
-                if (menu) menu.classList.remove('show');
-            }
-        });
-        var toggle = document.querySelector('.dropdown-toggle');
-        if (toggle) {
-            toggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                var menu = this.nextElementSibling;
-                if (menu) menu.classList.toggle('show');
-            });
-        }
-        setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(el) {
-                el.style.opacity = '0';
-                setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
-            });
-        }, 5000);
-    </script>
 </body>
 </html>

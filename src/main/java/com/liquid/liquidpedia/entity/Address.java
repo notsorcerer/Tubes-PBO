@@ -12,7 +12,7 @@ public class Address {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private User customer;
 
     private String label;
 
@@ -39,8 +39,8 @@ public class Address {
 
     public Long getIdAddress() { return idAddress; }
     public void setIdAddress(Long idAddress) { this.idAddress = idAddress; }
-    public Customer getCustomer() { return customer; }
-    public void setCustomer(Customer customer) { this.customer = customer; }
+    public User getCustomer() { return customer; }
+    public void setCustomer(User customer) { this.customer = customer; }
     public String getLabel() { return label; }
     public void setLabel(String label) { this.label = label; }
     public String getReceiverName() { return receiverName; }

@@ -37,7 +37,7 @@ public class OrderService {
     @Autowired
     private ProdukRepository produkRepository;
 
-    public List<Order> getOrderHistory(Customer customer) {
+    public List<Order> getOrderHistory(User customer) {
         return orderRepository.findByCustomerIdOrderByOrderDateDesc(customer.getId());
     }
 
@@ -47,7 +47,7 @@ public class OrderService {
     }
 
     @Transactional
-    public Order createOrder(Customer customer, CheckoutDto dto, String voucherCode) {
+    public Order createOrder(User customer, CheckoutDto dto, String voucherCode) {
         Cart cart = cartService.getCart(customer);
 
         if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
@@ -63,13 +63,14 @@ public class OrderService {
 
         double discountAmount = 0.0;
 
-        if (voucherCode != null && !voucherCode.isEmpty()) {
+        if (voucherCode != null && !voucherCode.trim().isEmpty()) {
             try {
-                Voucher voucher = voucherService.validateVoucher(voucherCode, cart.getTotalPrice());
+                Voucher voucher = voucherService.validateVoucher(voucherCode.trim(), cart.getTotalPrice());
                 discountAmount = voucherService.applyDiscount(voucher, cart.getTotalPrice());
                 voucher.setStock(voucher.getStock() - 1);
                 order.setVoucher(voucher);
-            } catch (RuntimeException ignored) {
+            } catch (RuntimeException e) {
+                throw new RuntimeException("Voucher: " + e.getMessage());
             }
         }
 
@@ -141,7 +142,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void cancelOrder(Customer customer, Long orderId) {
+    public void cancelOrder(User customer, Long orderId) {
         Order order = findById(orderId);
         if (!order.getCustomer().getId().equals(customer.getId())) {
             throw new RuntimeException("Order tidak ditemukan");

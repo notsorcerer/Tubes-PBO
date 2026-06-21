@@ -11,19 +11,13 @@
         <div class="error-icon">&#128274;</div>
         <h1>403</h1>
         <p>Akses ditolak! Waduh, kayaknya ini area terlarang.</p>
-        <p style="margin-bottom:32px;font-size:1rem;">Kamu perlu izin khusus untuk mengakses halaman ini. Coba login dengan akun yang sesuai.</p>
-        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <p style="font-size:1rem;">Kamu perlu izin khusus untuk mengakses halaman ini. Coba login dengan akun yang sesuai.</p>
+        <div class="error-action" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
             <a href="/" class="btn btn-primary" style="padding:14px 40px;">Kembali ke Beranda</a>
-            <a href="/login" class="btn btn-outline" style="padding:14px 40px;border-color:var(--primary);color:var(--primary);">Sign In</a>
+            <a href="/login" class="btn btn-outline" style="padding:14px 40px;border-color:var(--primary);color:var(--primary);">Masuk</a>
         </div>
     </div>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
-
-    <script>
-        document.getElementById('hamburger').addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('active');
-        });
-    </script>
 </body>
 </html>

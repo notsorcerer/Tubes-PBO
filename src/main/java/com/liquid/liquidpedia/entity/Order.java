@@ -15,7 +15,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
-    private Customer customer;
+    private User customer;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -50,8 +50,8 @@ public class Order {
 
     public Long getIdOrder() { return idOrder; }
     public void setIdOrder(Long idOrder) { this.idOrder = idOrder; }
-    public Customer getCustomer() { return customer; }
-    public void setCustomer(Customer customer) { this.customer = customer; }
+    public User getCustomer() { return customer; }
+    public void setCustomer(User customer) { this.customer = customer; }
     public OrderStatus getStatus() { return status; }
     public void setStatus(OrderStatus status) { this.status = status; }
     public Double getTotalPrice() { return totalPrice; }

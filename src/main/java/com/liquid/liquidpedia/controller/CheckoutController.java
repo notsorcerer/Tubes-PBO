@@ -3,8 +3,8 @@ package com.liquid.liquidpedia.controller;
 import com.liquid.liquidpedia.dto.CheckoutDto;
 import com.liquid.liquidpedia.entity.Address;
 import com.liquid.liquidpedia.entity.Cart;
-import com.liquid.liquidpedia.entity.Customer;
-import com.liquid.liquidpedia.repository.CustomerRepository;
+import com.liquid.liquidpedia.entity.User;
+import com.liquid.liquidpedia.repository.UserRepository;
 import com.liquid.liquidpedia.service.AddressService;
 import com.liquid.liquidpedia.service.CartService;
 import com.liquid.liquidpedia.service.OrderService;
@@ -32,24 +32,25 @@ public class CheckoutController {
     private AddressService addressService;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private UserRepository userRepository;
 
     @GetMapping("/checkout")
     public String checkoutForm(Authentication authentication,
                                @RequestParam(required = false) String voucherCode,
                                Model model) {
-        Customer customer = getCustomer(authentication);
-        Cart cart = cartService.getCart(customer);
+        User user = getUser(authentication);
+        Cart cart = cartService.getCart(user);
 
         if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
             return "redirect:/cart";
         }
 
-        List<Address> addresses = addressService.getAddressesByCustomer(customer);
+        List<Address> addresses = addressService.getAddressesByCustomer(user);
         model.addAttribute("cart", cart);
         model.addAttribute("addresses", addresses);
         model.addAttribute("checkoutDto", new CheckoutDto());
         model.addAttribute("voucherCode", voucherCode);
+        model.addAttribute("cartItemCount", cartService.getCartItemCount(user));
         return "checkout/form";
     }
 
@@ -64,8 +65,8 @@ public class CheckoutController {
             return "redirect:/checkout";
         }
         try {
-            Customer customer = getCustomer(authentication);
-            orderService.createOrder(customer, checkoutDto, voucherCode);
+            User user = getUser(authentication);
+            orderService.createOrder(user, checkoutDto, voucherCode);
             redirectAttributes.addFlashAttribute("success", "Pesanan berhasil dibuat!");
             return "redirect:/orders";
         } catch (RuntimeException e) {
@@ -74,9 +75,9 @@ public class CheckoutController {
         }
     }
 
-    private Customer getCustomer(Authentication authentication) {
+    private User getUser(Authentication authentication) {
         String email = authentication.getName();
-        return customerRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Customer tidak ditemukan"));
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User tidak ditemukan"));
     }
 }

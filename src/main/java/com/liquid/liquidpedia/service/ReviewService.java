@@ -1,9 +1,9 @@
 package com.liquid.liquidpedia.service;
 
 import com.liquid.liquidpedia.dto.ReviewDto;
-import com.liquid.liquidpedia.entity.Customer;
 import com.liquid.liquidpedia.entity.Produk;
 import com.liquid.liquidpedia.entity.Review;
+import com.liquid.liquidpedia.entity.User;
 import com.liquid.liquidpedia.repository.OrderRepository;
 import com.liquid.liquidpedia.repository.ProdukRepository;
 import com.liquid.liquidpedia.repository.ReviewRepository;
@@ -37,7 +37,7 @@ public class ReviewService {
         return orderRepository.hasCustomerPurchasedProduct(customerId, produkId);
     }
 
-    public Review submitReview(Customer customer, Long produkId, ReviewDto dto) {
+    public Review submitReview(User customer, Long produkId, ReviewDto dto) {
         if (!hasPurchased(customer.getId(), produkId)) {
             throw new RuntimeException("Anda harus membeli produk ini terlebih dahulu untuk memberikan review");
         }

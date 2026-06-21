@@ -3,7 +3,6 @@ package com.liquid.liquidpedia.service;
 import com.liquid.liquidpedia.dto.RegisterDto;
 import com.liquid.liquidpedia.entity.*;
 import com.liquid.liquidpedia.entity.enums.Role;
-import com.liquid.liquidpedia.repository.CustomerRepository;
 import com.liquid.liquidpedia.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 @Service
 public class AuthService {
@@ -19,13 +19,10 @@ public class AuthService {
     private UserRepository userRepository;
 
     @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Customer register(RegisterDto dto) {
+    public User register(RegisterDto dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new RuntimeException("Email sudah terdaftar");
         }
@@ -33,22 +30,22 @@ public class AuthService {
             throw new RuntimeException("Konfirmasi password tidak cocok");
         }
 
-        Customer customer = new Customer();
-        customer.setEmail(dto.getEmail());
-        customer.setPassword(passwordEncoder.encode(dto.getPassword()));
-        customer.setPhone(dto.getPhone());
-        customer.setRole(Role.CUSTOMER);
-        customer.setNameUser(dto.getName());
-        customer.setAddresses(new ArrayList<>());
-        customer.setOrders(new ArrayList<>());
-        customer.setReviews(new ArrayList<>());
+        User user = new User();
+        user.setEmail(dto.getEmail());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setPhone(dto.getPhone());
+        user.setRoles(Set.of(Role.CUSTOMER));
+        user.setNameUser(dto.getName());
+        user.setAddresses(new ArrayList<>());
+        user.setOrders(new ArrayList<>());
+        user.setReviews(new ArrayList<>());
 
         Cart cart = new Cart();
-        cart.setCustomer(customer);
+        cart.setCustomer(user);
         cart.setTotalPrice(0.0);
         cart.setCartItems(new ArrayList<>());
-        customer.setCart(cart);
+        user.setCart(cart);
 
-        return customerRepository.save(customer);
+        return userRepository.save(user);
     }
 }

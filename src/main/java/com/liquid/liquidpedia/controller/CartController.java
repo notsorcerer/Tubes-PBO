@@ -1,9 +1,9 @@
 package com.liquid.liquidpedia.controller;
 
 import com.liquid.liquidpedia.entity.Cart;
-import com.liquid.liquidpedia.entity.Customer;
+import com.liquid.liquidpedia.entity.User;
 import com.liquid.liquidpedia.entity.Voucher;
-import com.liquid.liquidpedia.repository.CustomerRepository;
+import com.liquid.liquidpedia.repository.UserRepository;
 import com.liquid.liquidpedia.service.CartService;
 import com.liquid.liquidpedia.service.VoucherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +23,14 @@ public class CartController {
     private VoucherService voucherService;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private UserRepository userRepository;
 
     @GetMapping("/cart")
     public String viewCart(Authentication authentication, Model model) {
-        Customer customer = getCustomer(authentication);
-        Cart cart = cartService.getCart(customer);
+        User user = getUser(authentication);
+        Cart cart = cartService.getCart(user);
         model.addAttribute("cart", cart);
+        model.addAttribute("cartItemCount", cartService.getCartItemCount(user));
         return "cart/view";
     }
 
@@ -39,8 +40,8 @@ public class CartController {
                             Authentication authentication,
                             RedirectAttributes redirectAttributes) {
         try {
-            Customer customer = getCustomer(authentication);
-            cartService.addItem(customer, produkId, qty);
+            User user = getUser(authentication);
+            cartService.addItem(user, produkId, qty);
             redirectAttributes.addFlashAttribute("success", "Produk berhasil ditambahkan ke cart!");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -54,8 +55,8 @@ public class CartController {
                             Authentication authentication,
                             RedirectAttributes redirectAttributes) {
         try {
-            Customer customer = getCustomer(authentication);
-            cartService.updateQty(customer, cartItemId, qty);
+            User user = getUser(authentication);
+            cartService.updateQty(user, cartItemId, qty);
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
@@ -67,8 +68,8 @@ public class CartController {
                              Authentication authentication,
                              RedirectAttributes redirectAttributes) {
         try {
-            Customer customer = getCustomer(authentication);
-            cartService.removeItem(customer, cartItemId);
+            User user = getUser(authentication);
+            cartService.removeItem(user, cartItemId);
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
@@ -79,8 +80,8 @@ public class CartController {
     public String applyVoucher(@RequestParam String kodeVoucher,
                                Authentication authentication,
                                Model model) {
-        Customer customer = getCustomer(authentication);
-        Cart cart = cartService.getCart(customer);
+        User user = getUser(authentication);
+        Cart cart = cartService.getCart(user);
         try {
             Voucher voucher = voucherService.validateVoucher(kodeVoucher, cart.getTotalPrice());
             double discount = voucherService.applyDiscount(voucher, cart.getTotalPrice());
@@ -94,9 +95,9 @@ public class CartController {
         return "cart/view";
     }
 
-    private Customer getCustomer(Authentication authentication) {
+    private User getUser(Authentication authentication) {
         String email = authentication.getName();
-        return customerRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Customer tidak ditemukan"));
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User tidak ditemukan"));
     }
 }

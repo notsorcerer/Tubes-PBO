@@ -7,80 +7,85 @@
     <title th:text="${title} ?: 'LiquidPedia'">LiquidPedia</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/svg+xml" href="/img/favicon.svg">
 </head>
+<body>
 <nav th:fragment="navbar" class="navbar">
     <div class="container navbar-container">
         <a href="/" class="navbar-brand">
-            <span class="brand-icon">&#9763;</span>
-            <span class="brand-text">Liquid<span class="brand-highlight">Pedia</span></span>
+            <span class="brand-highlight">Liquid</span><span class="brand-text">Pedia</span>
         </a>
-        <nav class="navbar-menu">
+        <div class="navbar-menu" id="navbarMenu">
             <a href="/" class="nav-link">Beranda</a>
             <a href="/products" class="nav-link">Produk</a>
-        </nav>
+        </div>
+
+        <form th:action="@{/products}" method="get" class="search-bar">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" name="search" placeholder="Cari produk..." class="search-input">
+        </form>
+
         <div class="navbar-actions">
             <div sec:authorize="isAuthenticated()">
                 <a href="/cart" class="cart-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/>
                     </svg>
+                    <span class="cart-badge" th:text="${cartItemCount}" th:if="${cartItemCount != null and cartItemCount > 0}">0</span>
                 </a>
             </div>
             <div sec:authorize="!isAuthenticated()">
-                <a href="/login" class="btn btn-outline">Sign In</a>
-                <a href="/register" class="btn btn-primary">Sign Up</a>
+                <a href="/login" class="nav-link">Masuk</a>
+                <a href="/register" class="btn btn-primary">Daftar</a>
             </div>
             <div sec:authorize="isAuthenticated()" class="dropdown">
-                <button class="dropdown-toggle" onclick="toggleDropdown(event)" style="background:none;border:none;cursor:pointer;">
+                <button class="dropdown-toggle" style="background:none;border:none;cursor:pointer;">
                     <div class="avatar">
                         <span th:text="${#strings.substring(#authentication.principal.username, 0, 1)}">U</span>
                     </div>
                 </button>
                 <div class="dropdown-menu">
-                    <a href="/profile" class="dropdown-item">Profile</a>
+                    <div class="dropdown-user-info">
+                        <strong sec:authentication="principal.username">User</strong>
+                        <span sec:authentication="principal.username" style="font-size:0.8rem;color:var(--gray-400);">email</span>
+                    </div>
+                    <hr class="dropdown-divider">
+                    <a href="/profile" class="dropdown-item">Profil</a>
                     <a href="/orders" class="dropdown-item">Riwayat Pesanan</a>
                     <a sec:authorize="hasRole('ADMIN')" href="/admin/dashboard" class="dropdown-item">Admin Panel</a>
                     <hr class="dropdown-divider">
-                    <a href="/logout" class="dropdown-item dropdown-item-danger">Logout</a>
+                    <a href="/logout" class="dropdown-item dropdown-item-danger">Keluar</a>
                 </div>
             </div>
         </div>
+
         <button class="hamburger" id="hamburger">
             <span></span><span></span><span></span>
         </button>
     </div>
     <nav class="mobile-menu" id="mobileMenu">
+        <form th:action="@{/products}" method="get" class="mobile-search">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" name="search" placeholder="Cari produk..." class="search-input">
+        </form>
         <a href="/" class="nav-link">Beranda</a>
         <a href="/products" class="nav-link">Produk</a>
         <hr>
         <div sec:authorize="!isAuthenticated()">
-            <a href="/login" class="nav-link">Sign In</a>
-            <a href="/register" class="nav-link">Sign Up</a>
+            <a href="/login" class="nav-link">Masuk</a>
+            <a href="/register" class="nav-link">Daftar</a>
         </div>
         <div sec:authorize="isAuthenticated()">
             <a href="/cart" class="nav-link">Cart</a>
-            <a href="/profile" class="nav-link">Profile</a>
+            <a href="/profile" class="nav-link">Profil</a>
             <a href="/orders" class="nav-link">Riwayat Pesanan</a>
             <a sec:authorize="hasRole('ADMIN')" href="/admin/dashboard" class="nav-link">Admin Panel</a>
-            <a href="/logout" class="nav-link">Logout</a>
+            <a href="/logout" class="nav-link">Keluar</a>
         </div>
     </nav>
-</nav>
-
-<script>
-    function toggleDropdown(e) {
-        e.stopPropagation();
-        var menu = e.currentTarget.nextElementSibling;
-        if (menu) menu.classList.toggle('show');
-    }
-    document.addEventListener('click', function(e) {
-        var dropdown = document.querySelector('.dropdown');
-        if (dropdown && !dropdown.contains(e.target)) {
-            var menu = dropdown.querySelector('.dropdown-menu');
-            if (menu) menu.classList.remove('show');
-        }
-    });
-</script>
+        <script src="/js/main.js"></script>
+    </nav>
+</body>
 </html>

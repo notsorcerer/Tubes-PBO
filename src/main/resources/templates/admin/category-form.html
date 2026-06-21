@@ -8,7 +8,7 @@
 <body th:replace="~{admin/layout/adminLayout :: layout}">
 <th:block th:fragment="content">
     <div class="admin-toolbar">
-        <h2 style="font-family:'Syne',sans-serif;font-weight:700;" th:text="${categoryDto.id != null} ? 'Edit Kategori' : 'Tambah Kategori'">
+        <h2 style="font-weight:700;" th:text="${categoryDto.id != null} ? 'Edit Kategori' : 'Tambah Kategori'">
             Form Kategori
         </h2>
         <a href="/admin/categories" class="btn btn-outline" style="border-color:var(--gray-300);color:var(--text);">

@@ -1,9 +1,10 @@
 package com.liquid.liquidpedia.controller;
 
-import com.liquid.liquidpedia.entity.Customer;
 import com.liquid.liquidpedia.entity.Order;
+import com.liquid.liquidpedia.entity.User;
 import com.liquid.liquidpedia.entity.enums.OrderStatus;
-import com.liquid.liquidpedia.repository.CustomerRepository;
+import com.liquid.liquidpedia.repository.UserRepository;
+import com.liquid.liquidpedia.service.CartService;
 import com.liquid.liquidpedia.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,13 +22,17 @@ public class OrderController {
     private OrderService orderService;
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private CartService cartService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/orders")
     public String orderHistory(Authentication authentication, Model model) {
-        Customer customer = getCustomer(authentication);
-        List<Order> orders = orderService.getOrderHistory(customer);
+        User user = getUser(authentication);
+        List<Order> orders = orderService.getOrderHistory(user);
         model.addAttribute("orders", orders);
+        model.addAttribute("cartItemCount", cartService.getCartItemCount(user));
         return "orders/history";
     }
 
@@ -35,15 +40,16 @@ public class OrderController {
     public String orderDetail(@PathVariable Long id,
                               Authentication authentication,
                               Model model) {
-        Customer customer = getCustomer(authentication);
+        User user = getUser(authentication);
         Order order = orderService.findById(id);
 
-        if (!order.getCustomer().getId().equals(customer.getId())) {
+        if (!order.getCustomer().getId().equals(user.getId())) {
             return "redirect:/orders";
         }
 
         model.addAttribute("order", order);
         model.addAttribute("canCancel", order.getStatus() == OrderStatus.PENDING);
+        model.addAttribute("cartItemCount", cartService.getCartItemCount(user));
         return "orders/detail";
     }
 
@@ -52,8 +58,8 @@ public class OrderController {
                               Authentication authentication,
                               RedirectAttributes redirectAttributes) {
         try {
-            Customer customer = getCustomer(authentication);
-            orderService.cancelOrder(customer, id);
+            User user = getUser(authentication);
+            orderService.cancelOrder(user, id);
             redirectAttributes.addFlashAttribute("success", "Pesanan berhasil dibatalkan");
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -61,9 +67,9 @@ public class OrderController {
         return "redirect:/orders/" + id;
     }
 
-    private Customer getCustomer(Authentication authentication) {
+    private User getUser(Authentication authentication) {
         String email = authentication.getName();
-        return customerRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Customer tidak ditemukan"));
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User tidak ditemukan"));
     }
 }

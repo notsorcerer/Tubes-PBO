@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       lang="id">
-<head th:replace="~{fragments/header :: head('Sign In - LiquidPedia')}">
-    <title>Sign In - LiquidPedia</title>
+<head th:replace="~{fragments/header :: head('Masuk - LiquidPedia')}">
+    <title>Masuk - LiquidPedia</title>
 </head>
 <body>
     <div th:replace="~{fragments/header :: navbar}"></div>
@@ -12,13 +12,13 @@
 
     <div class="auth-page">
         <div class="auth-card">
-            <h1>Welcome Back</h1>
-            <p class="subtitle">Sign in to your LiquidPedia account</p>
+            <h1>Masuk</h1>
+            <p class="subtitle">Masuk ke akun LiquidPedia kamu</p>
 
-            <div th:if="${param.error}" style="background:#dc3545;color:white;padding:12px 16px;border-radius:var(--radius);margin-bottom:20px;font-size:0.9rem;">
+            <div th:if="${param.error}" class="form-error" style="background:#dc3545;color:white;padding:12px 16px;border-radius:var(--radius-lg);margin-bottom:20px;text-align:center;">
                 Email atau password salah
             </div>
-            <div th:if="${param.logout}" style="background:#28a745;color:white;padding:12px 16px;border-radius:var(--radius);margin-bottom:20px;font-size:0.9rem;">
+            <div th:if="${param.logout}" class="form-error" style="background:#22c55e;color:white;padding:12px 16px;border-radius:var(--radius-lg);margin-bottom:20px;text-align:center;">
                 Anda telah logout
             </div>
 
@@ -31,21 +31,15 @@
                     <label class="form-label">Password</label>
                     <input type="password" name="password" class="form-input" placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block" style="padding:14px;">Sign In</button>
+                <button type="submit" class="btn btn-primary btn-block" style="padding:14px;">Masuk</button>
             </form>
 
             <p class="auth-link">
-                Belum punya akun? <a href="/register">Sign Up</a>
+                Belum punya akun? <a href="/register">Daftar</a>
             </p>
         </div>
     </div>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
-
-    <script>
-        document.getElementById('hamburger').addEventListener('click', function() {
-            document.getElementById('mobileMenu').classList.toggle('active');
-        });
-    </script>
 </body>
 </html>
